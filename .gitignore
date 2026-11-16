@@ -10,3 +10,6 @@ __pycache__/
 
 # ESP32 Wi-Fi Secrets
 firmware/**/secrets.h
+
+# Local Development
+.env
