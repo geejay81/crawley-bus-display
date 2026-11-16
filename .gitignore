@@ -1,0 +1,12 @@
+# Node & Cloudflare Worker
+node_modules/
+.wrangler/
+.dev.vars
+
+# Python & Large Raw GTFS Files
+__pycache__/
+*.zip
+.venv/
+
+# ESP32 Wi-Fi Secrets
+firmware/**/secrets.h
