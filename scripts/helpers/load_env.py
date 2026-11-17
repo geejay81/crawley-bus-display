@@ -1,17 +1,12 @@
 import os
-from zipfile import Path
+from pathlib import Path   # <-- Make sure this says pathlib, NOT zipfile!
 
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = SCRIPTS_DIR / ".env"
 
 def load_env(env_path: Path = ENV_FILE):
-    """Load key=value pairs from a local .env file into os.environ."""
-    path = Path(env_path)
-    if not path.exists():
-        # Also check parent directory if run from inside scripts/
-        path = Path("..") / env_path
-    if path.exists():
-        for line in path.read_text(encoding="utf-8").splitlines():
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if not line or line.startswith("#") or "=" not in line:
                 continue
@@ -20,7 +15,12 @@ def load_env(env_path: Path = ENV_FILE):
 
 load_env()
 
+def resolve_script_path(env_var: str, default_rel: str) -> str:
+    raw = os.getenv(env_var, default_rel)
+    p = Path(raw)
+    return str(p if p.is_absolute() else (SCRIPTS_DIR / p).resolve())
+
 TARGET_STOP = os.getenv("TARGET_STOP", "4400CY0246")
 TARGET_ROUTE_SHORT_NAME = os.getenv("TARGET_ROUTE_SHORT_NAME", "2")
-ZIP_PATH = os.getenv("GTFS_ZIP_PATH", "metrobus_gtfs.zip")
-OUTPUT_PATH = os.getenv("OUTPUT_JSON_PATH", "route2_schedule.json")
+ZIP_PATH = resolve_script_path("GTFS_ZIP_PATH", "metrobus_gtfs.zip")
+OUTPUT_PATH = resolve_script_path("OUTPUT_JSON_PATH", "../worker/src/route2_schedule.json")

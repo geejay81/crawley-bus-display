@@ -28,6 +28,7 @@ for st in stop_times:
 valid_trips = {}
 reference_stop_chain = []
 
+seen_trips = set()
 for t in trips:
     tid = t["trip_id"]
     if t["route_id"] not in route_ids or tid not in trips_stops:
@@ -58,6 +59,12 @@ for t in trips:
             int(cal.get(d, 0))
             for d in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
         ]
+
+        # Deduplicate trips with the exact same operating days + target_arrival
+        dedup_key = (tuple(days), upstream_seq[-1]["arrival_time"])
+        if dedup_key in seen_trips:
+            continue
+        seen_trips.add(dedup_key)
 
         valid_trips[tid] = {
             "days": days,
